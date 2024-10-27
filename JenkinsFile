@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Setup') {
+            steps {
+                echo 'Setting up the environment...'
+                // Optionally create a virtual environment if needed
+                sh 'python3 -m venv venv'
+                sh './venv/bin/pip install -r requirements.txt || true' // Install dependencies if requirements.txt exists
+            }
+        }
+
+        stage('Run Script') {
+            steps {
+                echo 'Running the Python script...'
+                sh './venv/bin/python jenkins_test.py'
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                echo 'Cleaning workspace...'
+                cleanWs()
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
